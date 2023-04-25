@@ -6,28 +6,33 @@
 #    By: agallet <agallet@student.42mulhouse.fr>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/04/14 14:03:53 by agallet           #+#    #+#              #
-#    Updated: 2023/04/14 14:04:02 by agallet          ###   ########.fr        #
+#    Updated: 2023/04/21 14:42:14 by agallet          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = GCC
 FLAGS = -Wall -Werrors -Wextra
-INCL = -I ./libft
+INCL = -I ./libft -I ./libft/ft_printf
 LIBS = -L ./libft -lft
-SRCS = main.c
+SRCS = main.c 
+SRCS_TEST = test.c
 OBJS = $(SRCS:.c=.o)
-NAME = minishell
+OBJS_TEST = $(SRCS_TEST:.c=.o)
+NAME = echo
 
 %.o: %.c
-	$(CC) $(INCL) -c $< - o $@
+	$(CC) $(INCL) -c $< -o $@
 
-$(NAME): $(OBJS) libs
+$(NAME): $(OBJS) ./libft/libft.a
 	$(CC) $(FLAGS) -o $(NAME) $(OBJS) $(LIBS)
 
-libs:
+./libft/libft.a :
 	make -C libft
 
 all: $(NAME)
+
+test : $(NAME) $(OBJS_TEST) ./libft/libft.a
+	$(CC) $(FLAGS) -o test $(OBJS_TEST) $(LIBS)
 
 clean :
 	make clean -C libft
@@ -39,4 +44,4 @@ fclean : clean
 
 re : fclean all
 
-.PHONY : all clean fclean libs re
+.PHONY : all clean fclean re
