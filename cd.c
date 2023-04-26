@@ -6,7 +6,7 @@
 /*   By: agallet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 12:23:09 by agallet           #+#    #+#             */
-/*   Updated: 2023/04/25 16:02:37 by agallet          ###   ########.fr       */
+/*   Updated: 2023/04/26 12:35:57 by agallet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,16 +24,20 @@ int	cd(int argc, char **argv, char **env)
 
 	i = 0;
 	if (argc < 2)
-		return (-1);
+		return (1);
 	str = ft_strnstr(argv[0], "cd", ft_strlen(argv[0]));
 	if (!str)
-		return (-1);
+		return (1);
 	chdir(argv[1]);
 	cwd = malloc(sizeof(char) * (i + 1));
+	if (!cwd)
+		return (1);
 	while (getcwd(cwd, i + 1) == NULL)
 	{
 		ft_clear2d(&cwd);
 		cwd = malloc(sizeof(char) * (i + 1));
+		if (!cwd)
+			return (1);
 		i++;
 	}
 	printf("%s\n", cwd);

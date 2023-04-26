@@ -1,17 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   echo.c                                             :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: agallet <agallet@student.42mulhouse.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 18:04:29 by agallet           #+#    #+#             */
-/*   Updated: 2023/04/19 13:31:05 by agallet          ###   ########.fr       */
+/*   Updated: 2023/04/26 12:25:12 by agallet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-
+#include "ft_printf.h"
+#include <stdio.h>
 
 int check_opt_echo(char *str)
 {
@@ -23,18 +24,23 @@ int check_opt_echo(char *str)
     return (1);
 }
 
-
-int ft_echo(char *cmd, char **str)
+int ft_echo(int argc, char **argv, char **env )
 {
     char    *check;
-    
-    check = ft_strnstr(cmd, "echo", 4); /*move the pointer str[0] !!!!!!*/
-    if (!check)
-        return (-1);
-    ft_printf("%s\n", str[0]);
-    if (check_opt_echo(str[0])) /*check the option for echo*/
-        ft_printf("%s", str[1]);
-    else
-        ft_printf("%s\n", str[1]);
-    return (1);
+	int		i;
+
+	(void) env;
+	i = 1;
+    check = ft_strnstr(argv[0], "echo", ft_strlen(argv[0]));
+	if (!check)
+        return (1);
+	while (i < argc)
+	{
+		if (i != 1)
+			printf(" ");
+		printf("%s", argv[i++]);
+	}
+    if (check_opt_echo(argv[1]) && argv[2])
+		printf("\n");
+    return (0);
 }
