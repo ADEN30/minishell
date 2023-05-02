@@ -6,7 +6,7 @@
 /*   By: agallet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/26 12:45:50 by agallet           #+#    #+#             */
-/*   Updated: 2023/04/26 16:00:55 by agallet          ###   ########.fr       */
+/*   Updated: 2023/05/02 18:14:05 by agallet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,87 +16,173 @@
 #include <errno.h>
 #include "libft.h"
 
-int	ft_search_env(char **env)
+int	ft_search_env(char *str, char **env)
+{
+	int	i;
+	int	cmp;
+
+	i = 0;
+	cmp = 0;
+	while (str[i++] != '=')
+		cmp++;
+	i = 0;
+	while (env[i])
+	{
+		if (ft_strnstr(env[i], str, cmp))
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+static int	change_var(char *var, char **env)
+{
+	int	i;
+
+	i = ft_search_env(var, env);
+	if (i == -1)
+		return (1);
+	free(env[i]);
+	env[i] = ft_strdup(var);
+	return (0);
+}
+
+static int	set_env(char *var, char **env)
+{
+	int		i;
+	char	*temp;
+
+	i = 0;
+	if (ft_isalpha(var[i]) || var[i] == '_')
+		i++;
+	if (i == 0)
+	{
+		printf("ok\n");
+		return (1);
+	}
+	while (ft_isalnum(var[i]) || var[i] == '_')
+		i++;
+	if (var[i] == '=')
+	{
+		if (var[++i] == '\0')
+		{
+			temp = ft_strjoin(var, "\"\"");
+			free(var);
+			var = temp;
+		}
+	}	
+	else if (var[i] != '\0')
+		return (1);
+	return (0);
+}
+
+static	int	put_export(char **env)
 {
 	int	i;
 
 	i = 0;
 	while (env[i])
-	{
-		if (ft_strnstr(
-	}
-}
-
-static int	change_env(char **argv, char **env)
-{
-	char	*str;
-	int		i;
-
-	i = 0;
-	while (ft_isalpha(argv[1][i]) && i < ft_strlen(argv[1]))
-		i++;
-	str = malloc(sizeof(char) * i + 1);
-	if (!str)
-		return (1);
-	ft_strlcpy(str, argv[1], i);
+		printf("%s\n", env[i++]);
 	return (0);
 }
 
-static int	new_env(char **argv, char **env)
+static	char	**export_errors(char **var, int bin)
 {
-	char	**new;
-	char	*str;
+	char	**new_var;
 	int		i;
 
 	i = 0;
-	new = malloc(sizeof(char *) * ft_strlen2d(env));
+	new_var = malloc(sizeof(char *) * ft_strlen2d(var) - 1);
+	if (!new_var)
+		return (NULL);
+	while (var[i])
+	{
+		if (i == bin)
+			i++;
+		*new_var = ft_strdup(var[i]);
+		if (!*new_var)
+		{
+			ft_clear2d(new_var);
+			return (NULL);
+		}
+		i++;
+	}
+	printf("Syntaxe errors : %s\n", var[bin]);
+	ft_clear2d(var);
+	return (new_var);
+}
+
+static	char	**parse_var(char **str)
+{
+	char	**var;
+	int		i;
+	int		iv;
+
+	i = 0;
+	iv = 0;
+	while (str[i] && !ft_strnstr(str[i], "export", 6))
+		i++;
+	var = malloc(sizeof(char *) * (ft_strlen2d(str) - i + 1));
+	while (str[++i])
+	{
+		var[iv] = ft_strdup(str[i]);
+		iv++;
+	}
+	var[i] = NULL;
+	return (var);
+}
+
+static	int	cmp_env_var(char **var, char **env)
+{
+	int	i;
+	int	j;
+	int	same;
+
+	i = 0;
+	same = 0;
 	while (env[i])
 	{
-		str = ft_strdup(en[i]);
-		if (!str)
-			return(1);
-		new[i] = str;
+		j = 0;
+		while (var[j])
+		{
+			if (ft_strnstr(env[i], var[j], ft_strlen(var[j])))
+				same++;
+			j++;
+		}
 		i++;
 	}
-	str = ft_strnstr(argv[1], "=");
-	if (!str)
-	{
-		ft_clear2d(new);
-		return (1);
-	}
-	str = ft_strdup(str);
-	new[i] = str;
-	ft_clear2d(env);
-	return (0);
+	return (same);
+
 }
 
-static int	set_env(char **var, char **env)
-{
-	int		i;
-
-	i = 0;
-	while (ft_isapla(argv[1][i]))
-		i++;
-	if (i == ft_strlen(argv[1]) - 1 || i == 0)
-		return (1);
-	if (ft_search_var(env))
-		return (change_env(argv, env));
-	else
-		return(new_env(argv, env));
-}
+static	char	**new_env(char **var, char **env);
 
 int	ft_export(int argc, char **argv, char **env)
 {
 	char	**var;
+	int		i;
 	
-	if (!ft_strnstr(argv[0], "export", 6))
+	i = 0;
+	if (!ft_strnstr(argv[1], "export", 6))
 		return (1);
 	if (argc == 1)
 		return (put_export(env));
-	var = parse_var(&argv[1]);
+	var = parse_var(argv);
 	while (var[i])
 	{
-		set_env(var, env);
-		i++;
+		if (set_env(var[i], env) == 1)
+			var = export_errors(var, i);
+		if (ft_search_env(var[i], env) != -1)
+			change_var(var[i++], env);
+		else
+			i++;
 	}
+	return (0);
+}
+
+int	main(int argc, char **argv, char **env)
+{
+
+	printf("%d\n", ft_export(argc, argv, env));
+	return (0);
 }
