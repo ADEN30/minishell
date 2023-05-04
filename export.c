@@ -6,7 +6,7 @@
 /*   By: agallet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/26 12:45:50 by agallet           #+#    #+#             */
-/*   Updated: 2023/05/02 18:14:05 by agallet          ###   ########.fr       */
+/*   Updated: 2023/05/04 16:39:55 by agallet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	ft_search_env(char *str, char **env)
 	i = 0;
 	while (env[i])
 	{
-		if (ft_strnstr(env[i], str, cmp))
+		if (ft_strncmp(env[i], str, cmp))
 			return (i);
 		i++;
 	}
@@ -136,6 +136,7 @@ static	int	cmp_env_var(char **var, char **env)
 {
 	int	i;
 	int	j;
+	int	k;
 	int	same;
 
 	i = 0;
@@ -145,6 +146,9 @@ static	int	cmp_env_var(char **var, char **env)
 		j = 0;
 		while (var[j])
 		{
+			k = 0;
+			while (var[j][k] && var[j][k] != '=')
+				k++;
 			if (ft_strnstr(env[i], var[j], ft_strlen(var[j])))
 				same++;
 			j++;
@@ -152,14 +156,48 @@ static	int	cmp_env_var(char **var, char **env)
 		i++;
 	}
 	return (same);
-
 }
 
-static	char	**new_env(char **var, char **env);
+static	char	**new_env(char **var, char **env)
+{
+	char	**new_env;
+	int		tab[4];
+	int		length;
+	char	*test;
+
+	ft_nindex(tab, 4);
+	length = ft_strlen2d(env) + ft_strlen2d(var) - cmp_env_var(var, env);
+	printf("%d\n", cmp_env_var(var, env));
+	new_env = malloc(sizeof(char *) * (length + 2));
+	if (!new_env)
+		return (NULL);
+	while (env[tab[0]++])
+	{
+		while (env[tab[0]][tab[2]] && env[tab[0]][tab[2]++] != '=');
+		while (var[tab[1]] && ft_strncmp(env[tab[0]], var[tab[1]], tab[2]))
+			tab[1]++;
+		if (var[tab[1]] && !ft_strncmp(env[tab[0]], var[tab[1]], tab[2]))
+		{
+			new_env[tab[3]++] = ft_strdup(var[tab[1]]);
+			free(var[tab[1]]);
+			var[tab[1]] = ft_strdup("1");
+		}
+		else
+			new_env[tab[3]++] = ft_strdup(env[tab[0]]);
+		tab[2] = 0;
+		tab[1] = 0;
+	}
+	while (var[tab[1]++])
+		if (!ft_strnstr(var[tab[1]], "1", 1))
+			new_env[tab[3]++] = ft_strdup(var[tab[1]]);
+	new_env[tab[3]] = NULL;
+	return (new_env);
+}
 
 int	ft_export(int argc, char **argv, char **env)
 {
 	char	**var;
+	char	**old_env;
 	int		i;
 	
 	i = 0;
@@ -177,6 +215,10 @@ int	ft_export(int argc, char **argv, char **env)
 		else
 			i++;
 	}
+	old_env = env;
+	env = new_env(var, env);
+	ft_clear2d(var);
+	ft_clear2d(old_env);
 	return (0);
 }
 
