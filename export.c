@@ -6,7 +6,7 @@
 /*   By: agallet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/26 12:45:50 by agallet           #+#    #+#             */
-/*   Updated: 2023/05/04 16:39:55 by agallet          ###   ########.fr       */
+/*   Updated: 2023/05/05 16:47:39 by agallet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,38 +16,41 @@
 #include <errno.h>
 #include "libft.h"
 
-int	ft_search_env(char *str, char **env)
+static	char	**ft_strdup2d(char **str)
 {
-	int	i;
-	int	cmp;
+	int		i;
+	char	**ret;
 
+	ret = malloc(sizeof(char *) *(ft_strlen(str)));
 	i = 0;
-	cmp = 0;
-	while (str[i++] != '=')
-		cmp++;
-	i = 0;
-	while (env[i])
+	while (str[i])
 	{
-		if (ft_strncmp(env[i], str, cmp))
-			return (i);
+		ret[i] = ft_strdup[i];
 		i++;
 	}
-	return (-1);
+	return (ret);
 }
 
-static int	change_var(char *var, char **env)
+static	void	increase_sort(char **env)
 {
-	int	i;
+	char	**str;
 
-	i = ft_search_env(var, env);
-	if (i == -1)
-		return (1);
-	free(env[i]);
-	env[i] = ft_strdup(var);
-	return (0);
+	str = ft_strdup2d(env);
+	while (str[i])
+	{
+		j = 0;
+		while (str[j])
+		{
+			val = ft_strncmp(str[i], str[j], ft_strlen(str[j]));
+			if (va < 0 && )
+
+		}
+		printf("deleted -x %s\n", temp);
+		i++;
+	}
 }
 
-static int	set_env(char *var, char **env)
+static int	laws_env(char *var, char **env)
 {
 	int		i;
 	char	*temp;
@@ -78,11 +81,8 @@ static int	set_env(char *var, char **env)
 
 static	int	put_export(char **env)
 {
-	int	i;
 
-	i = 0;
-	while (env[i])
-		printf("%s\n", env[i++]);
+	increase_sort(env);
 	return (0);
 }
 
@@ -132,7 +132,7 @@ static	char	**parse_var(char **str)
 	return (var);
 }
 
-static	int	cmp_env_var(char **var, char **env)
+static	int	nbsame_env_var(char **var, char **env)
 {
 	int	i;
 	int	j;
@@ -158,6 +158,33 @@ static	int	cmp_env_var(char **var, char **env)
 	return (same);
 }
 
+static	void	completed_env(char **new_env, char **var, int *tab)
+{
+	while (var[++tab[1]])
+		if (ft_strncmp(var[tab[1]], "1", 1))
+			new_env[++tab[3]] = ft_strdup(var[tab[1]]);
+	new_env[tab[3]] = NULL;
+}
+
+static	void	refresh_index(int *tab)
+{
+	tab[2] = 0;
+	tab[1] = 0;
+	tab[0] = tab[0] + 1;
+	tab[3] = tab[3] + 1;
+}
+
+static	void	set_env(char **var, char **env, char **new_env, int *tab)
+{
+	if (var[tab[1]] && !ft_strncmp(env[tab[0]], var[tab[1]], tab[2]))
+	{
+		new_env[tab[3]] = ft_strdup(var[tab[1]]);
+		free(var[tab[1]]);
+		var[tab[1]] = ft_strdup("1");
+	}
+	else
+		new_env[tab[3]] = env[tab[0]];
+}
 static	char	**new_env(char **var, char **env)
 {
 	char	**new_env;
@@ -166,59 +193,44 @@ static	char	**new_env(char **var, char **env)
 	char	*test;
 
 	ft_nindex(tab, 4);
-	length = ft_strlen2d(env) + ft_strlen2d(var) - cmp_env_var(var, env);
-	printf("%d\n", cmp_env_var(var, env));
+	length = ft_strlen2d(env) + ft_strlen2d(var) - nbsame_env_var(var, env);
 	new_env = malloc(sizeof(char *) * (length + 2));
 	if (!new_env)
 		return (NULL);
-	while (env[tab[0]++])
+	while (tab[0] < ft_strlen2d(env))
 	{
 		while (env[tab[0]][tab[2]] && env[tab[0]][tab[2]++] != '=');
 		while (var[tab[1]] && ft_strncmp(env[tab[0]], var[tab[1]], tab[2]))
-			tab[1]++;
-		if (var[tab[1]] && !ft_strncmp(env[tab[0]], var[tab[1]], tab[2]))
-		{
-			new_env[tab[3]++] = ft_strdup(var[tab[1]]);
-			free(var[tab[1]]);
-			var[tab[1]] = ft_strdup("1");
-		}
-		else
-			new_env[tab[3]++] = ft_strdup(env[tab[0]]);
-		tab[2] = 0;
-		tab[1] = 0;
+			++tab[1];
+		set_env(var, env, new_env, tab);
+		refresh_index(tab);
 	}
-	while (var[tab[1]++])
-		if (!ft_strnstr(var[tab[1]], "1", 1))
-			new_env[tab[3]++] = ft_strdup(var[tab[1]]);
-	new_env[tab[3]] = NULL;
+	completed_env(new_env, var, tab);
 	return (new_env);
 }
 
 int	ft_export(int argc, char **argv, char **env)
 {
 	char	**var;
-	char	**old_env;
+	char	**new_txt;
 	int		i;
 	
 	i = 0;
 	if (!ft_strnstr(argv[1], "export", 6))
 		return (1);
-	if (argc == 1)
+	if (argc == 2)
 		return (put_export(env));
 	var = parse_var(argv);
 	while (var[i])
 	{
-		if (set_env(var[i], env) == 1)
+		if (laws_env(var[i], env) == 1)
 			var = export_errors(var, i);
-		if (ft_search_env(var[i], env) != -1)
-			change_var(var[i++], env);
-		else
-			i++;
+		i++;
 	}
-	old_env = env;
-	env = new_env(var, env);
+	new_txt = new_env(var, env);
 	ft_clear2d(var);
-	ft_clear2d(old_env);
+	put_export(new_txt);
+	//ft_clear2d(old_env);
 	return (0);
 }
 

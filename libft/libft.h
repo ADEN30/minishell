@@ -6,7 +6,7 @@
 /*   By: agallet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 21:40:00 by agallet           #+#    #+#             */
-/*   Updated: 2023/05/04 14:55:49 by agallet          ###   ########.fr       */
+/*   Updated: 2023/05/05 10:13:39 by agallet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int		ft_isalnum(int c);
 int		ft_isascii(int c);
 int		ft_isprint(int c);
 
-int		ft_nindex(int *tab, int size);
+int		ft_nindex(int *tab, unsigned int size);
 
 size_t	ft_strlen(const char *s);
 int		ft_strlen2d(char **str);
