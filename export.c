@@ -6,7 +6,7 @@
 /*   By: agallet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/26 12:45:50 by agallet           #+#    #+#             */
-/*   Updated: 2023/05/05 16:47:39 by agallet          ###   ########.fr       */
+/*   Updated: 2023/05/09 14:13:44 by agallet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,40 +16,106 @@
 #include <errno.h>
 #include "libft.h"
 
-static	char	**ft_strdup2d(char **str)
+/* Affichage */
+static int	verif_tab(int *tab, int index, int length)
 {
-	int		i;
-	char	**ret;
+	int	i;
 
-	ret = malloc(sizeof(char *) *(ft_strlen(str)));
 	i = 0;
-	while (str[i])
+	while (i < length)
 	{
-		ret[i] = ft_strdup[i];
+		if (tab[i] == index)
+			return (1);
 		i++;
 	}
-	return (ret);
+	return (0);
 }
 
-static	void	increase_sort(char **env)
+static int	longest_str(char *str1, char *str2)
 {
-	char	**str;
+	int	length1;
+	int	length2;
 
-	str = ft_strdup2d(env);
-	while (str[i])
-	{
-		j = 0;
-		while (str[j])
-		{
-			val = ft_strncmp(str[i], str[j], ft_strlen(str[j]));
-			if (va < 0 && )
-
-		}
-		printf("deleted -x %s\n", temp);
-		i++;
-	}
+	length1 = ft_strlen(str1);
+	length2 = ft_strlen(str2);
+	if (length1 > length2)
+		return (length1);
+	else
+		return (length2);
 }
 
+static	int	not_in_tab(int *tab, int length)
+{
+	int	i;
+
+	i = 0;
+	while (i < length)
+	{
+		if (!verif_tab(tab, i, length))
+			return (i);
+		i++;
+	}
+	return (0);
+}
+
+static	int	*set_tab(int length)
+{
+	int	i;
+	int	*tab;
+
+	i = 0;
+	tab = malloc(sizeof(int) * (length));
+	while (i < length)
+		tab[i++] = -1;
+	return (tab);
+}
+
+static	void	put_export(char *str)
+{
+	int	i;
+
+	i = 0;
+	printf("declare -x ");
+	while (str[i] != '=')
+		printf("%c", str[i++]);
+	printf("%c\"", str[i++]);
+	while (str[i])
+		printf("%c", str[i++]);
+	printf("\"\n");
+
+}
+
+static	int	call_export(char **env)
+{
+	char	*temp;
+	int		*tab;
+	int		nb[4];
+
+	ft_nindex(nb, 4);
+	nb[3] = ft_strlen2d(env);
+	tab = set_tab(nb[3]);
+	while (nb[0] < nb[3])
+	{
+		nb[1] = 0;
+		temp = env[not_in_tab(tab, nb[3])];
+		tab[nb[0]] = not_in_tab(tab, nb[3]);
+		while (env[nb[1]])
+		{
+			nb[2] = ft_strncmp(env[nb[1]], temp, longest_str(env[nb[1]], temp));
+			if (nb[2] < 0 && !verif_tab(tab, nb[1], nb[3]))
+			{
+				temp = env[nb[1]];
+				tab[nb[0]] = nb[1];
+			}
+				nb[1] = nb[1] + 1;
+		}
+		put_export(temp);
+		nb[0] = nb[0] + 1;
+	}
+	return (0);
+}
+
+/* check export */
 static int	laws_env(char *var, char **env)
 {
 	int		i;
@@ -59,10 +125,7 @@ static int	laws_env(char *var, char **env)
 	if (ft_isalpha(var[i]) || var[i] == '_')
 		i++;
 	if (i == 0)
-	{
-		printf("ok\n");
 		return (1);
-	}
 	while (ft_isalnum(var[i]) || var[i] == '_')
 		i++;
 	if (var[i] == '=')
@@ -76,13 +139,6 @@ static int	laws_env(char *var, char **env)
 	}	
 	else if (var[i] != '\0')
 		return (1);
-	return (0);
-}
-
-static	int	put_export(char **env)
-{
-
-	increase_sort(env);
 	return (0);
 }
 
@@ -112,6 +168,7 @@ static	char	**export_errors(char **var, int bin)
 	return (new_var);
 }
 
+/* parse export */
 static	char	**parse_var(char **str)
 {
 	char	**var;
@@ -185,6 +242,8 @@ static	void	set_env(char **var, char **env, char **new_env, int *tab)
 	else
 		new_env[tab[3]] = env[tab[0]];
 }
+
+/* export */
 static	char	**new_env(char **var, char **env)
 {
 	char	**new_env;
@@ -219,7 +278,7 @@ int	ft_export(int argc, char **argv, char **env)
 	if (!ft_strnstr(argv[1], "export", 6))
 		return (1);
 	if (argc == 2)
-		return (put_export(env));
+		return (call_export(env));
 	var = parse_var(argv);
 	while (var[i])
 	{
@@ -229,7 +288,7 @@ int	ft_export(int argc, char **argv, char **env)
 	}
 	new_txt = new_env(var, env);
 	ft_clear2d(var);
-	put_export(new_txt);
+	call_export(new_txt);
 	//ft_clear2d(old_env);
 	return (0);
 }
