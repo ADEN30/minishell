@@ -6,7 +6,7 @@
 /*   By: agallet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/26 15:37:10 by agallet           #+#    #+#             */
-/*   Updated: 2023/05/10 11:23:05 by agallet          ###   ########.fr       */
+/*   Updated: 2023/05/11 11:58:21 by agallet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@ int		call_export(char **env);
 void	put_export(char *str);
 
 /* Check export */
-char	**export_errors(char **var, int bin);
+char	**del_var(char **var, int bin);
 int	laws_env(char *var, char **env);
 
 /* Parse_export */
 char	**new_env(char **var, char **env);
 char	**parse_var(char **str);
-
+char	**same_var(char **var);
 /* Export */
 void	set_env(char **var, char **env, char **new_env, int *tab);

@@ -6,7 +6,7 @@
 /*   By: agallet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/26 12:45:50 by agallet           #+#    #+#             */
-/*   Updated: 2023/05/10 12:46:56 by agallet          ###   ########.fr       */
+/*   Updated: 2023/05/11 15:37:11 by agallet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,13 @@ int	ft_export(int argc, char **argv, char **env)
 	if (argc == 2)
 		return (call_export(env));
 	var = parse_var(argv);
-	while (var[i])
+	while (i < ft_strlen2d(var))
 	{
 		if (laws_env(var[i], env) == 1)
-			var = export_errors(var, i);
+			var = del_var(var, i);
 		i++;
 	}
+	var = same_var(var);
 	new_txt = new_env(var, env);
 	ft_clear2d(var);
 	call_export(new_txt);
