@@ -6,7 +6,7 @@
 /*   By: agallet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/26 15:37:10 by agallet           #+#    #+#             */
-/*   Updated: 2023/05/11 11:58:21 by agallet          ###   ########.fr       */
+/*   Updated: 2023/05/15 13:26:46 by agallet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,5 +28,3 @@ int	laws_env(char *var, char **env);
 char	**new_env(char **var, char **env);
 char	**parse_var(char **str);
 char	**same_var(char **var);
-/* Export */
-void	set_env(char **var, char **env, char **new_env, int *tab);
