@@ -6,7 +6,7 @@
 /*   By: agallet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 12:23:09 by agallet           #+#    #+#             */
-/*   Updated: 2023/04/26 12:35:57 by agallet          ###   ########.fr       */
+/*   Updated: 2023/05/15 14:30:42 by agallet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int	cd(int argc, char **argv, char **env)
 			return (1);
 		i++;
 	}
+	//fonction pour parse les commandes pour faire un export et ainsi modifier la variable d'environnement pwd
 	printf("%s\n", cwd);
 	return (0);
 }
